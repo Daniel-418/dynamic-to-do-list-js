@@ -8,7 +8,7 @@ function main() {
     localStorage.setItem('tasks', JSON.stringify(tasksArray));
   }
 
-  function getFromStorage() {
+  function loadTasks() {
     const stored = localStorage.getItem('tasks');
     return stored ? JSON.parse(stored) : [];
   }
@@ -27,7 +27,7 @@ function main() {
       taskList.removeChild(li);
 
       // B. Remove from Storage
-      const currentTasks = getFromStorage();
+      const currentTasks = loadTasks();
       // Filter out the task being removed
       const updatedTasks = currentTasks.filter(t => t !== text);
       saveToStorage(updatedTasks);
@@ -37,7 +37,7 @@ function main() {
     return li;
   }
 
-  const storedTasks = getFromStorage();
+  const storedTasks = loadTasks();
   for (let taskText of storedTasks) {
     const newLi = createTaskElement(taskText);
     taskList.appendChild(newLi);
@@ -54,7 +54,7 @@ function main() {
     taskList.appendChild(newLi);
     taskInput.value = '';
 
-    const currentTasks = getFromStorage();
+    const currentTasks = loadTasks();
     currentTasks.push(taskText);
     saveToStorage(currentTasks);
 

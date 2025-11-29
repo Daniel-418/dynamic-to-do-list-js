@@ -1,26 +1,63 @@
 function main() {
+
   const addButton = document.getElementById('add-task-btn');
   const taskInput = document.getElementById('task-input');
   const taskList = document.getElementById('task-list');
+
+  function saveToStorage(tasksArray) {
+    localStorage.setItem('tasks', JSON.stringify(tasksArray));
+  }
+
+  function getFromStorage() {
+    const stored = localStorage.getItem('tasks');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function createTaskElement(text) {
+    const li = document.createElement('li');
+    li.textContent = text;
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = "Remove";
+    removeButton.classList.add('remove-btn');
+
+    // logic to remove from SCREEN and STORAGE
+    removeButton.addEventListener('click', () => {
+      // A. Remove from Screen
+      taskList.removeChild(li);
+
+      // B. Remove from Storage
+      const currentTasks = getFromStorage();
+      // Filter out the task being removed
+      const updatedTasks = currentTasks.filter(t => t !== text);
+      saveToStorage(updatedTasks);
+    });
+
+    li.appendChild(removeButton);
+    return li;
+  }
+
+  const storedTasks = getFromStorage();
+  for (let taskText of storedTasks) {
+    const newLi = createTaskElement(taskText);
+    taskList.appendChild(newLi);
+  }
 
   function addTasks() {
     const taskText = taskInput.value.trim();
     if (!taskText) {
       alert("Please enter a task");
+      return;
     }
-    else {
-      const task = document.createElement('li');
-      task.textContent = taskText;
 
-      const remove_button = document.createElement('button');
-      remove_button.textContent = "Remove";
-      remove_button.classList.add('remove-btn');
-      remove_button.addEventListener('click', () => taskList.removeChild(task));
+    const newLi = createTaskElement(taskText);
+    taskList.appendChild(newLi);
+    taskInput.value = '';
 
-      task.appendChild(remove_button);
-      taskList.appendChild(task);
-      taskInput.value = '';
-    }
+    const currentTasks = getFromStorage();
+    currentTasks.push(taskText);
+    saveToStorage(currentTasks);
+
   };
 
   addButton.addEventListener('click', addTasks);
